@@ -1,5 +1,8 @@
 import database from "./databaseConnection";
 import { RowDataPacket, ResultSetHeader  } from "mysql2";
+import bcrypt from 'bcrypt';
+
+import validator from 'validator';
 
 // Define a type for user data
 export interface User extends RowDataPacket {
@@ -12,7 +15,7 @@ export interface User extends RowDataPacket {
 }
 
 // Helper function to get connection and release it
-async function getConnection() {
+export async function getConnection() {
   const connection = await database.getConnection();
   return connection;
 }
@@ -214,26 +217,32 @@ export async function checkIfEmailExist(email: string): Promise<void> {
 
 // Create a new user
 export async function createUser(
-  username: string, 
-  email: string, 
+  username: string,
+  email: string,
   password_hash: string
 ): Promise<{ id: number; username: string; email: string }> {
   let connection;
   try {
+    
+    if (!validator.isEmail(email)) {
+      throw new Error('Invalid email format');
+    }
+
+    const hashedPassword = await bcrypt.hash(password_hash, 10);
+
     connection = await getConnection();
     await checkIfEmailExist(email);
     await checkIfUsernameExist(username);
 
-    // Adjust the result type to match ResultSetHeader
     const [result] = await connection.query<ResultSetHeader>(
       `
         INSERT INTO users (username, email, password_hash)
         VALUES (:username, :email, :password_hash)
       `,
-      { username, email, password_hash }
+      { username, email, password_hash: hashedPassword }
     );
 
-    return { id: result.insertId, username, email }; // Now this works correctly
+    return { id: result.insertId, username, email };
   } catch (error) {
     console.error('Error creating user:', error);
     throw error;

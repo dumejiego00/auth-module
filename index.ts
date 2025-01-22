@@ -1,3 +1,3 @@
-import { getAllUsers, getTotalUsers } from "./databaseAccessLayer";
+import { getAllUsers, getTotalUsers, createUser } from "./databaseAccessLayer";
 
-getTotalUsers().then((users)=>console.log(users))
+// createUser("jojo", "test@gmail.com", "haha").then((result)=>console.log(result))
