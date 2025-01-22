@@ -219,7 +219,7 @@ export async function checkIfEmailExist(email: string): Promise<void> {
 export async function createUser(
   username: string,
   email: string,
-  password_hash: string
+  password: string
 ): Promise<{ id: number; username: string; email: string }> {
   let connection;
   try {
@@ -228,7 +228,7 @@ export async function createUser(
       throw new Error('Invalid email format');
     }
 
-    const hashedPassword = await bcrypt.hash(password_hash, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     connection = await getConnection();
     await checkIfEmailExist(email);
@@ -236,10 +236,10 @@ export async function createUser(
 
     const [result] = await connection.query<ResultSetHeader>(
       `
-        INSERT INTO users (username, email, password_hash)
-        VALUES (:username, :email, :password_hash)
+        INSERT INTO users (username, email, password)
+        VALUES (:username, :email, :password)
       `,
-      { username, email, password_hash: hashedPassword }
+      { username, email, password: hashedPassword }
     );
 
     return { id: result.insertId, username, email };
