@@ -32,7 +32,7 @@ export async function getAllUsers(): Promise<User[] | null> {
     console.error("Error fetching all users:", err);
     return null;
   } finally {
-    if (connection) await connection.release(); // Release connection back to the pool
+    if (connection) connection.release(); // Release connection back to the pool
   }
 }
 
@@ -52,7 +52,7 @@ export async function getUserById(userId: number): Promise<User | null> {
     console.error("Error fetching user by ID:", err);
     return null;
   } finally {
-    if (connection) await connection.release();
+    if (connection) connection.release();
   }
 }
 
@@ -72,7 +72,7 @@ export async function getUserByUsername(username: string): Promise<User | null> 
     console.error("Error fetching user by username:", err);
     return null;
   } finally {
-    if (connection) await connection.release();
+    if (connection) connection.release();
   }
 }
 
@@ -111,7 +111,7 @@ export async function getTotalUsers(): Promise<number> {
     console.error("Error counting users:", err);
     return 0;
   } finally {
-    if (connection) await connection.release();
+    if (connection) connection.release();
   }
 }
 
@@ -131,7 +131,7 @@ export async function getVerifiedUsers(): Promise<User[] | null> {
     console.error("Error fetching verified users:", err);
     return null;
   } finally {
-    if (connection) await connection.release();
+    if (connection) connection.release();
   }
 }
 
@@ -151,7 +151,7 @@ export async function getAdminUsers(): Promise<User[] | null> {
     console.error("Error fetching admin users:", err);
     return null;
   } finally {
-    if (connection) await connection.release();
+    if (connection) connection.release();
   }
 }
 
@@ -170,7 +170,7 @@ export async function deleteUserById(userId: number): Promise<boolean> {
     console.error("Error deleting user:", err);
     return false;
   } finally {
-    if (connection) await connection.release();
+    if (connection) connection.release();
   }
 }
 
@@ -189,7 +189,7 @@ export async function checkIfUsernameExist(username: string): Promise<void> {
   } catch (err) {
     console.error("Error checking if username exists:", err);
   } finally {
-    if (connection) await connection.release();
+    if (connection) connection.release();
   }
 }
 
@@ -208,7 +208,7 @@ export async function checkIfEmailExist(email: string): Promise<void> {
   } catch (err) {
     console.error("Error checking if email exists:", err);
   } finally {
-    if (connection) await connection.release();
+    if (connection) connection.release();
   }
 }
 
@@ -238,6 +238,6 @@ export async function createUser(
     console.error('Error creating user:', error);
     throw error;
   } finally {
-    if (connection) await connection.release();
+    if (connection) connection.release();
   }
 }
