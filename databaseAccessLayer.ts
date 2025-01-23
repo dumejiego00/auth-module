@@ -1,7 +1,6 @@
 import database from "./databaseConnection";
 import { RowDataPacket, ResultSetHeader, Connection } from "mysql2/promise";
 import bcrypt from 'bcrypt';
-
 import validator from 'validator';
 
 // Define a type for user data
@@ -14,29 +13,9 @@ export interface User extends RowDataPacket {
   created_at: Date;
 }
 
-// Helper function to get connection and release it
 export async function getConnection() {
   const connection = await database.getConnection();
   return connection;
-}
-
-// Fetch all users
-export async function getAllUsers(): Promise<User[] | null> {
-  const sqlQuery = `
-    SELECT id, email, username, is_verified, is_admin, created_at
-    FROM users;
-  `;
-  let connection;
-  try {
-    connection = await getConnection();
-    const [results] = await connection.query<User[]>(sqlQuery);
-    return results;
-  } catch (err) {
-    console.error("Error fetching all users:", err);
-    return null;
-  } finally {
-    if (connection) connection.release(); // Release connection back to the pool
-  }
 }
 
 // Fetch a user by ID
@@ -79,101 +58,23 @@ export async function getUserByUsername(username: string): Promise<User | null> 
   }
 }
 
-// Fetch a user by email
-export async function getUserByEmail(email: string): Promise<User | null> {
+export async function getUserByEmail(
+  email: string,
+  connection: Connection
+): Promise<User | null> {
   const sqlQuery = `
     SELECT id, email, username, is_verified, is_admin, created_at
     FROM users
     WHERE email = :email;
   `;
-  let connection;
   try {
-    connection = await getConnection();
-    const [results] = await connection.query<User[]>(sqlQuery, { email });
-    return results[0] || null;
+    const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { email });
+    // Cast the first result to a User type
+    const user = results[0] ? (results[0] as User) : null;
+    return user;
   } catch (err) {
     console.error("Error fetching user by email:", err);
     return null;
-  } finally {
-    if (connection) connection.release();
-  }
-}
-
-// Get total users
-export async function getTotalUsers(): Promise<number> {
-  const sqlQuery = `
-    SELECT COUNT(*) AS total_users
-    FROM users;
-  `;
-  let connection;
-  try {
-    connection = await getConnection();
-    const [results] = await connection.query<RowDataPacket[]>(sqlQuery);  // Use RowDataPacket[]
-    return results[0]?.total_users || 0;
-  } catch (err) {
-    console.error("Error counting users:", err);
-    return 0;
-  } finally {
-    if (connection) connection.release();
-  }
-}
-
-// Fetch verified users
-export async function getVerifiedUsers(): Promise<User[] | null> {
-  const sqlQuery = `
-    SELECT id, email, username, is_verified, is_admin, created_at
-    FROM users
-    WHERE is_verified = TRUE;
-  `;
-  let connection;
-  try {
-    connection = await getConnection();
-    const [results] = await connection.query<User[]>(sqlQuery);
-    return results;
-  } catch (err) {
-    console.error("Error fetching verified users:", err);
-    return null;
-  } finally {
-    if (connection) connection.release();
-  }
-}
-
-// Fetch admin users
-export async function getAdminUsers(): Promise<User[] | null> {
-  const sqlQuery = `
-    SELECT id, email, username, is_verified, is_admin, created_at
-    FROM users
-    WHERE is_admin = TRUE;
-  `;
-  let connection;
-  try {
-    connection = await getConnection();
-    const [results] = await connection.query<User[]>(sqlQuery);
-    return results;
-  } catch (err) {
-    console.error("Error fetching admin users:", err);
-    return null;
-  } finally {
-    if (connection) connection.release();
-  }
-}
-
-// Delete user by ID
-export async function deleteUserById(userId: number): Promise<boolean> {
-  const sqlQuery = `
-    DELETE FROM users
-    WHERE id = :userId;
-  `;
-  let connection;
-  try {
-    connection = await getConnection();
-    await connection.query(sqlQuery, { userId });
-    return true;
-  } catch (err) {
-    console.error("Error deleting user:", err);
-    return false;
-  } finally {
-    if (connection) connection.release();
   }
 }
 

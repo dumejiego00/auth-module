@@ -1,13 +1,13 @@
-import { getAllUsers, getTotalUsers, createUser } from "./databaseAccessLayer";
+import { getUserByEmail, createUser } from "./databaseAccessLayer";
 import { getTestConnection } from "./databaseTestConnection";
 import { getConnection } from "./databaseAccessLayer";
 
 async function testCreateUser() {
 //   const connection = await getTestConnection();
   const connection = await getConnection();
-  await createUser('existinuser', 'another@exampe.com', 'password123', connection);
+  return await getUserByEmail('danumejiego@gmail.com', connection);
 }
 
-testCreateUser().catch((err) => {
+testCreateUser().then(user=>console.log(user)).catch((err) => {
   console.error('Error:', err);
 });

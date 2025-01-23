@@ -1,5 +1,5 @@
-import { checkIfUsernameExist, checkIfEmailExist, createUser } from './databaseAccessLayer';
-import { getTestConnection, closeTestConnection } from './databaseTestConnection';
+import { checkIfUsernameExist, checkIfEmailExist, createUser, getUserByEmail } from './databaseAccessLayer';
+import { getTestConnection, closeTestConnection, resetTestDatabase } from './databaseTestConnection';
 import { Connection, RowDataPacket } from 'mysql2/promise';
 
 describe('checkIfUsernameExist', () => {
@@ -14,7 +14,7 @@ describe('checkIfUsernameExist', () => {
   });
 
   beforeEach(async () => {
-    await connection.query('TRUNCATE TABLE users');
+    await resetTestDatabase();
   });
 
   it('should not throw an error if username does not exist', async () => {
@@ -58,7 +58,7 @@ describe('checkIfEmailExist', () => {
   });
 
   beforeEach(async () => {
-    await connection.query('TRUNCATE TABLE users');
+    await resetTestDatabase();
   });
 
   it('should not throw an error if email does not exist', async () => {
@@ -102,7 +102,7 @@ describe('createUser', () => {
   });
 
   beforeEach(async () => {
-    await connection.query('TRUNCATE TABLE users');
+    await resetTestDatabase();
   });
 
   it('should create a new user when username and email are unique', async () => {
@@ -146,5 +146,39 @@ describe('createUser', () => {
   it('should throw an error if the email format is invalid', async () => {
     await expect(createUser('newuser', 'invalid-email', 'password123', connection))
       .rejects.toThrow('Invalid email format');
+  });
+});
+
+describe('getUserByEmail', () => {
+  let connection: Connection;
+
+  beforeAll(async () => {
+    connection = await getTestConnection();
+  });
+
+  afterAll(async () => {
+    await closeTestConnection();
+  });
+
+  beforeEach(async () => {
+    await resetTestDatabase();
+  });
+
+  it('should return null if user does not exist', async () => {
+    const user = await getUserByEmail('nonexistent@example.com', connection);
+    expect(user).toBeNull();
+  });
+
+  it('should return the user if the email exists', async () => {
+    const email = 'existing@example.com';
+    await connection.query(
+      'INSERT INTO users (username, email, password) VALUES (:username, :email, :password)', 
+      { username: 'testuser', email, password: 'hashedpassword' }
+    );
+
+    const user = await getUserByEmail(email, connection);
+    expect(user).not.toBeNull();
+    expect(user?.email).toBe(email);
+    expect(user?.username).toBe('testuser');
   });
 });
