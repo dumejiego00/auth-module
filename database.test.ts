@@ -1,4 +1,4 @@
-import { checkIfUsernameExist, checkIfEmailExist, createUser, getUserByEmail, getUserById } from './databaseAccessLayer';
+import { checkIfUsernameExist, checkIfEmailExist, createUser, getUserByEmail, getUserById, getUserByUsername } from './databaseAccessLayer';
 import { getTestConnection, closeTestConnection, resetTestDatabase } from './databaseTestConnection';
 import { Connection, RowDataPacket } from 'mysql2/promise';
 
@@ -226,6 +226,49 @@ describe('getUserById', () => {
     const nonExistingUserId = 99999;
 
     const user = await getUserById(nonExistingUserId, connection);
+
+    expect(user).toBeNull();
+  });
+});
+
+describe('getUserByUsername', () => {
+  let connection: Connection;
+
+  beforeAll(async () => {
+    connection = await getTestConnection();
+  });
+
+  afterAll(async () => {
+    await closeTestConnection();
+  });
+
+  beforeEach(async () => {
+    await resetTestDatabase();
+  });
+
+  it('should return the user if the username exists', async () => {
+    await connection.query(
+      'INSERT INTO users (email, username, password, is_verified, is_admin) VALUES (:email, :username, :password, :is_verified, :is_admin)',
+      {
+        email: 'test@example.com',
+        username: 'testuser',
+        password: 'hashedpassword',
+        is_verified: true,
+        is_admin: false,
+      }
+    );
+
+    const user = await getUserByUsername('testuser', connection);
+
+    expect(user).not.toBeNull();
+    expect(user?.username).toBe('testuser');
+    expect(user?.email).toBe('test@example.com');
+  });
+
+  it('should return null if the username does not exist', async () => {
+    const nonExistingUsername = 'nonexistinguser';
+
+    const user = await getUserByUsername(nonExistingUsername, connection);
 
     expect(user).toBeNull();
   });

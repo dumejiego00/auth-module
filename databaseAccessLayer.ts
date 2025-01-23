@@ -3,27 +3,15 @@ import { RowDataPacket, ResultSetHeader, Connection } from "mysql2/promise";
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 
-// Define a type for user data
-export interface User extends RowDataPacket {
-  id: number;
-  email: string;
-  username: string;
-  is_verified: boolean;
-  is_admin: boolean;
-  created_at: Date;
-}
-
 export async function getConnection() {
   const connection = await database.getConnection();
   return connection;
 }
 
-// Fetch a user by ID
-
 export async function getUserById(
   userId: number,
-  connection: Connection // Accept the connection as a parameter
-): Promise<User | null> {
+  connection: Connection 
+): Promise<RowDataPacket | null> {
   const sqlQuery = `
     SELECT id, email, username, is_verified, is_admin, created_at
     FROM users
@@ -31,37 +19,32 @@ export async function getUserById(
   `;
   try {
     const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { userId });
-    const user = results[0] ? (results[0] as User) : null; // Cast the result to User
-    return user;
+    return results[0] || null; 
   } catch (err) {
     console.error("Error fetching user by ID:", err);
     return null;
   }
 }
 
-export async function getUserByUsername(username: string): Promise<User | null> {
+export async function getUserByUsername(username: string, connection: Connection): Promise<RowDataPacket | null> {
   const sqlQuery = `
     SELECT id, email, username, is_verified, is_admin, created_at
     FROM users
     WHERE username = :username;
   `;
-  let connection;
   try {
-    connection = await getConnection();
-    const [results] = await connection.query<User[]>(sqlQuery, { username });
+    const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { username });
     return results[0] || null;
   } catch (err) {
     console.error("Error fetching user by username:", err);
     return null;
-  } finally {
-    if (connection) connection.release();
   }
 }
 
 export async function getUserByEmail(
   email: string,
   connection: Connection
-): Promise<User | null> {
+): Promise<RowDataPacket | null> {
   const sqlQuery = `
     SELECT id, email, username, is_verified, is_admin, created_at
     FROM users
@@ -69,9 +52,7 @@ export async function getUserByEmail(
   `;
   try {
     const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { email });
-    // Cast the first result to a User type
-    const user = results[0] ? (results[0] as User) : null;
-    return user;
+    return results[0] || null; // Directly return the first result or null if no result
   } catch (err) {
     console.error("Error fetching user by email:", err);
     return null;
