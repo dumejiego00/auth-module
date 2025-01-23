@@ -1,5 +1,5 @@
 import database from "./databaseConnection";
-import { RowDataPacket, ResultSetHeader  } from "mysql2";
+import { RowDataPacket, ResultSetHeader, Connection } from "mysql2/promise";
 import bcrypt from 'bcrypt';
 
 import validator from 'validator';
@@ -177,12 +177,9 @@ export async function deleteUserById(userId: number): Promise<boolean> {
   }
 }
 
-// Check if username exists
-export async function checkIfUsernameExist(username: string): Promise<void> {
-  let connection;
+export async function checkIfUsernameExist(username: string, connection: Connection): Promise<void> {
   try {
-    connection = await getConnection();
-    const [existingUsername] = await connection.query<User[]>(
+    const [existingUsername] = await connection.query<RowDataPacket[]>(
       'SELECT * FROM users WHERE username = :username', 
       { username }
     );
@@ -191,48 +188,40 @@ export async function checkIfUsernameExist(username: string): Promise<void> {
     }
   } catch (err) {
     console.error("Error checking if username exists:", err);
-  } finally {
-    if (connection) connection.release();
+    throw err; 
   }
 }
 
-// Check if email exists
-export async function checkIfEmailExist(email: string): Promise<void> {
-  let connection;
+export async function checkIfEmailExist(email: string, connection: Connection): Promise<void> {
   try {
-    connection = await getConnection();
-    const [existingEmail] = await connection.query<User[]>(
-      'SELECT * FROM users WHERE email = :email', 
+    const [existingEmail] = await connection.query<RowDataPacket[]>(
+      'SELECT * FROM users WHERE email = :email',
       { email }
     );
     if (existingEmail.length > 0) {
       throw new Error('Email is already in use by a different user');
     }
   } catch (err) {
-    console.error("Error checking if email exists:", err);
-  } finally {
-    if (connection) connection.release();
+    console.error('Error checking if email exists:', err);
+    throw err;
   }
 }
 
-// Create a new user
 export async function createUser(
   username: string,
   email: string,
-  password: string
+  password: string,
+  connection: Connection 
 ): Promise<{ id: number; username: string; email: string }> {
-  let connection;
   try {
-    
     if (!validator.isEmail(email)) {
       throw new Error('Invalid email format');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    connection = await getConnection();
-    await checkIfEmailExist(email);
-    await checkIfUsernameExist(username);
+    await checkIfEmailExist(email, connection); 
+    await checkIfUsernameExist(username, connection);
 
     const [result] = await connection.query<ResultSetHeader>(
       `
@@ -246,7 +235,5 @@ export async function createUser(
   } catch (error) {
     console.error('Error creating user:', error);
     throw error;
-  } finally {
-    if (connection) connection.release();
   }
 }
