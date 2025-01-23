@@ -19,26 +19,26 @@ export async function getConnection() {
 }
 
 // Fetch a user by ID
-export async function getUserById(userId: number): Promise<User | null> {
+
+export async function getUserById(
+  userId: number,
+  connection: Connection // Accept the connection as a parameter
+): Promise<User | null> {
   const sqlQuery = `
     SELECT id, email, username, is_verified, is_admin, created_at
     FROM users
     WHERE id = :userId;
   `;
-  let connection;
   try {
-    connection = await getConnection();
-    const [results] = await connection.query<User[]>(sqlQuery, { userId });
-    return results[0] || null;
+    const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { userId });
+    const user = results[0] ? (results[0] as User) : null; // Cast the result to User
+    return user;
   } catch (err) {
     console.error("Error fetching user by ID:", err);
     return null;
-  } finally {
-    if (connection) connection.release();
   }
 }
 
-// Fetch a user by username
 export async function getUserByUsername(username: string): Promise<User | null> {
   const sqlQuery = `
     SELECT id, email, username, is_verified, is_admin, created_at
