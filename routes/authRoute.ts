@@ -38,6 +38,14 @@ router.get(
   }
 );
 
+router.get("/register", forwardAuthenticated, (req, res) => {
+  const errMessage = req.session.messages;
+  if (errMessage) {
+    res.render("register", { message: errMessage });
+  } else {
+    res.render("register", { message: "" });
+  }
+});
 router.get("/login", forwardAuthenticated, (req, res) => {
   const errMessage = req.session.messages;
   if (errMessage) {

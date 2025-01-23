@@ -1,12 +1,19 @@
 <div class="row mt-5">
     <div class="col-md-6 m-auto">
       <div class="card card-body text-center">
-        <h1 class="mb-3">
-          <img src="/secure-icon.png" alt="icon" width="20%" />
-        </h1>
         <p><%=message[message.length-1]%></p>
-        <h2>Login</h2>
+        <h2>Register</h2>
         <form action="/auth/login" method="POST">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input
+              type="username"
+              id="username"
+              name="username"
+              class="form-control"
+              placeholder="Enter Username"
+            />
+          </div>
           <div class="form-group">
             <label for="email">Email</label>
             <input
@@ -27,16 +34,16 @@
               placeholder="Enter Password"
             />
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Login</button>
+          <button type="submit" class="btn btn-primary btn-block">Register</button>
         </form>
+        <br/>
         <p>OR</p>
         <form action="/auth/github" method="GET">
           <button type="submit" class="btn btn-primary btn-block">
-            Login with Github
+            Register with Github
           </button>
         </form>
-        <p class="mt-4">New User? <a href="/auth/register">Register</a></p>
-        <p>Forgot Password? <a href="/auth/forgot">Reset</a></p>
+        <p class="mt-4">Already have an account? <a href="/auth/login">Login</a></p>
       </div>
     </div>
   </div>
