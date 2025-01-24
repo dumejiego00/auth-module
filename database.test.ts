@@ -287,7 +287,7 @@ describe("verifyUser", () => {
   });
 
   beforeEach(async () => {
-    await resetTestDatabase
+    await resetTestDatabase();
   });
 
   it("should verify a user when the user exists", async () => {
