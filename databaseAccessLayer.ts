@@ -3,6 +3,14 @@ import { RowDataPacket, ResultSetHeader, Connection } from "mysql2/promise";
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  password: string;
+  is_verified: boolean;
+}
+
 export async function getConnection() {
   const connection = await database.getConnection();
   return connection;
@@ -10,8 +18,8 @@ export async function getConnection() {
 
 export async function getUserById(
   userId: number,
-  connection: Connection 
-): Promise<RowDataPacket | null> {
+  connection: Connection
+): Promise<User | null> { 
   const sqlQuery = `
     SELECT id, email, username, is_verified, is_admin, created_at
     FROM users
@@ -19,7 +27,11 @@ export async function getUserById(
   `;
   try {
     const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { userId });
-    return results[0] || null; 
+
+    if (results.length === 0) return null;
+
+    const user = results[0] as User;
+    return user;
   } catch (err) {
     console.error("Error fetching user by ID:", err);
     return null;
@@ -44,20 +56,25 @@ export async function getUserByUsername(username: string, connection: Connection
 export async function getUserByEmail(
   email: string,
   connection: Connection
-): Promise<RowDataPacket | null> {
+): Promise<User | null> { 
   const sqlQuery = `
-    SELECT id, email, username, is_verified, is_admin, created_at
+    SELECT id, username, email, password, is_verified
     FROM users
     WHERE email = :email;
   `;
   try {
     const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { email });
-    return results[0] || null; // Directly return the first result or null if no result
+
+    if (results.length === 0) return null;
+
+    const user = results[0] as User;
+    return user;
   } catch (err) {
     console.error("Error fetching user by email:", err);
     return null;
   }
 }
+
 
 export async function checkIfUsernameExist(username: string, connection: Connection): Promise<void> {
   try {
