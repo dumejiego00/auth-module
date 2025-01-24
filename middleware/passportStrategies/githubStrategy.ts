@@ -22,6 +22,7 @@ const githubStrategy: GitHubStrategy = new GitHubStrategy(
     profile: any,
     done: VerifyCallback
   ) => {
+    console.log("profile", profile)
     try {
       const connection = await getConnection();
       const user = await getUserById(Number(profile.id), connection); 
@@ -31,7 +32,7 @@ const githubStrategy: GitHubStrategy = new GitHubStrategy(
       } else {
         const newUser = await createUser(
           profile.username || `github_user_${profile.id}`,
-          profile.emails?.[0]?.value || "",
+          profile.emails?.[0]?.value || "placeholder@github.com",
           "", 
           connection
         );
