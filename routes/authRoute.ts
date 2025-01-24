@@ -10,6 +10,7 @@ import { verifyUser, createUser, getConnection } from "../databaseAccessLayer";
 import { get } from "http";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import flash from "connect-flash"
 dotenv.config();
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -53,15 +54,12 @@ router.get(
 );
 
 router.get("/register", forwardAuthenticated, (req, res) => {
-  const errMessage = req.session.messages;
-  let message2 = req.query.message;
-  if (message2 === undefined) message2 = "";
-  if (errMessage) {
-    res.render("register", { message: errMessage, message2:message2 });
-  } else {
-    res.render("register", { message: "", message2:message2 });
-  }
+  // Retrieve flash messages for errors or other types
+  const message = req.flash("error"); // Assuming "error" is the flash key used for errors
+
+  res.render("register", { message});
 });
+
 router.post("/register", async (req, res) => {
   const connection = await getConnection();
   try {
@@ -81,7 +79,12 @@ router.post("/register", async (req, res) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Email Verification",
-      html: `<p>Please verify your email by clicking the link below:</p><p><a href="${verificationUrl}">Verify Email</a></p>`,
+      html: `
+        <p>Welcome, <strong>${username}</strong>!</p>
+        <p>Thank you for registering. Please verify your email by clicking the link below:</p>
+        <p><a href="${verificationUrl}">Verify Email</a></p>
+        <p>If you did not sign up, please ignore this email.</p>
+      `,
     };
 
     try {
@@ -89,18 +92,30 @@ router.post("/register", async (req, res) => {
       console.log("Verification email sent successfully");
     } catch (error) {
       console.error("Failed to send verification email:", error);
-      return res.status(500).json({ error: "Failed to send verification email. Please try again." });
+      req.flash(
+        "error",
+        "Registration successful, but we couldn't send the verification email. Please try again."
+      );
+      return res.redirect("/auth/register");
     }
 
-    res.redirect(`/auth/register-success?message=${encodeURIComponent("Registration successful. Please verify your email.")}`);
-  } catch (error:unknown) {
+    req.flash(
+      "success",
+      "Registration successful. Please check your email to verify your account."
+    );
+    res.redirect("/auth/register-success");
+  } catch (error: unknown) {
     if (error instanceof Error) {
-      res.status(400).redirect(`/auth/register?message=${encodeURIComponent(error.message)}`);
+      console.error("Registration error:", error.message);
+      req.flash("error", error.message);
     } else {
-      res.status(400).redirect(`/auth/register?message=${encodeURIComponent("An unexpected error occurred.")}`);
+      console.error("Unexpected error:", error);
+      req.flash("error", "An unexpected error occurred. Please try again.");
     }
+    res.redirect("/auth/register");
   }
 });
+
 
 router.get("/register-success", (req, res) => {
   const message = req.query.message || "Registration successful!";
@@ -109,40 +124,46 @@ router.get("/register-success", (req, res) => {
 
 router.get("/verify-email", async (req, res) => {
   const token = req.query.token as string;
-  const connection = await getConnection();
 
   const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in the environment variables");
-}
+  if (!JWT_SECRET) {
+    console.error("JWT_SECRET is not defined");
+    req.flash("error", "Server configuration error. Please try again later.");
+    return res.redirect("/auth/register");
+  }
+
+  const connection = await getConnection();
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
 
     await verifyUser(decoded.userId, connection);
 
-    res.redirect(`/auth/login?message=${encodeURIComponent("Email verified successfully. You can now log in.")}`);
+    req.flash("success", "Email verified successfully! You can now log in.");
+    res.redirect("/auth/login");
   } catch (error) {
     console.error("Email verification error:", error);
-    res.status(400).redirect(`/auth/register?message=${encodeURIComponent("Invalid or expired token. Contact yeuphoristic@gmail.com or use different username/email")}`);
+    req.flash(
+      "error",
+      "Invalid or expired token. Please contact support or try registering again with a different username/email."
+    );
+    res.redirect("/auth/register");
   }
 });
 
+
 router.get("/login", forwardAuthenticated, (req, res) => {
-  const errMessage = req.session.messages;
-  if (errMessage) {
-    res.render("login", { message: errMessage });
-  } else {
-    res.render("login", { message: "" });
-  }
+  const message = req.flash("error"); 
+  res.render("login", { message });
 });
+
 
 router.post(
   "/login",
   passport.authenticate("local", {
     successRedirect: "/dashboard",
     failureRedirect: "/auth/login",
-    failureMessage: true,
+    failureFlash: true,
   })
 );
 

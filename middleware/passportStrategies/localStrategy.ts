@@ -15,6 +15,8 @@ declare global {
       username: string;
       email: string;
       password: string;
+      is_verified:boolean;
+      is_admin:boolean;
     }
   }
 }

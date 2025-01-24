@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 
 router.get("/dashboard", ensureAuthenticated, (req, res) => {
   const id = req.user!.id;
-  if (userModel.isAdmin(id)) {
+  if (req.user?.is_verified) {
     res.render("adminDashboard", {
       user: req.user,
     });

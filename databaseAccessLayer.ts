@@ -9,6 +9,7 @@ interface User {
   email: string;
   password: string;
   is_verified: boolean;
+  is_admin:boolean;
 }
 
 export async function getConnection() {
@@ -119,8 +120,8 @@ export async function createUser(
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await checkIfEmailExist(email, connection); 
     await checkIfUsernameExist(username, connection);
+    await checkIfEmailExist(email, connection); 
 
     const [result] = await connection.query<ResultSetHeader>(
       `

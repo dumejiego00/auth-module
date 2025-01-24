@@ -35,7 +35,7 @@ const githubStrategy: GitHubStrategy = new GitHubStrategy(
           "", 
           connection
         );
-        return done(null, {...newUser, password:"placeholder"});
+        return done(null, {...newUser, password:"placeholder", is_verified:false, is_admin:false});
       }
     } catch (error) {
       console.error("GitHub Strategy Error:", error);
