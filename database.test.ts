@@ -1,4 +1,4 @@
-import { checkIfUsernameExist, checkIfEmailExist, createUser, getUserByEmail, getUserById, getUserByUsername } from './databaseAccessLayer';
+import { checkIfUsernameExist, checkIfEmailExist, createUser, getUserByEmail, getUserById, getUserByUsername, verifyUser } from './databaseAccessLayer';
 import { getTestConnection, closeTestConnection, resetTestDatabase } from './databaseTestConnection';
 import { Connection, RowDataPacket } from 'mysql2/promise';
 
@@ -271,5 +271,61 @@ describe('getUserByUsername', () => {
     const user = await getUserByUsername(nonExistingUsername, connection);
 
     expect(user).toBeNull();
+  });
+});
+
+describe("verifyUser", () => {
+  let connection: Connection;
+
+  beforeAll(async () => {
+    connection = await getTestConnection();
+  });
+
+  afterAll(async () => {
+    await closeTestConnection();
+  });
+
+  beforeEach(async () => {
+    await resetTestDatabase
+  });
+
+  it("should verify a user when the user exists", async () => {
+    await connection.query(
+      `INSERT INTO users (email, username, password, is_verified, is_admin, created_at)
+       VALUES (:email, :username, :password, :is_verified, :is_admin, NOW())`,
+      {
+        email: "testuser@example.com",
+        username: "testuser",
+        password: "hashedpassword",
+        is_verified: false,
+        is_admin: false,
+      }
+    );
+
+    const [rows] = await connection.query<RowDataPacket[]>(
+      "SELECT id FROM users WHERE username = :username",
+      { username: "testuser" }
+    );
+    const userId = rows[0].id;
+
+    const verifiedUser = await verifyUser(userId, connection);
+
+    expect(verifiedUser).not.toBeNull();
+    expect(verifiedUser?.id).toBe(userId);
+    expect(verifiedUser?.is_verified).toBe(1);
+
+    const [updatedUser] = await connection.query<RowDataPacket[]>(
+      "SELECT * FROM users WHERE id = :id",
+      { id: userId }
+    );
+    expect(updatedUser[0].is_verified).toBe(1);
+  });
+
+  it("should return null if the user does not exist", async () => {
+    const nonExistingUserId = 99999;
+
+    const result = await verifyUser(nonExistingUserId, connection);
+
+    expect(result).toBeNull();
   });
 });

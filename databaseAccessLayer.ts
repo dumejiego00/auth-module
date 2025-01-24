@@ -119,3 +119,34 @@ export async function createUser(
     throw error;
   }
 }
+
+export async function verifyUser(userId: number, connection: Connection): Promise<RowDataPacket | null> {
+  const sqlQuery = `
+    UPDATE users
+    SET is_verified = true
+    WHERE id = :userId;
+  `;
+
+  try {
+    const [result] = await connection.query(sqlQuery, { userId });
+
+    if ((result as any).affectedRows === 0) {
+      console.log("No user found with the specified ID to verify.");
+      return null;
+    }
+
+    const [updatedUser] = await connection.query<RowDataPacket[]>(
+      `
+      SELECT id, email, username, is_verified, is_admin, created_at
+      FROM users
+      WHERE id = :userId;
+      `,
+      { userId }
+    );
+
+    return updatedUser[0] || null;
+  } catch (err) {
+    console.error("Error verifying user:", err);
+    throw err;
+  }
+}
