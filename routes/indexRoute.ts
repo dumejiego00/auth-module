@@ -3,7 +3,6 @@ import {
   ensureAuthenticated,
 } from "../middleware/checkAuth";
 
-
 const router = express.Router();
 
 router.get("/", (req, res) => {
