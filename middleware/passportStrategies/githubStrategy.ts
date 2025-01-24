@@ -2,7 +2,7 @@ import { Request } from "express";
 import { VerifyCallback } from "passport-oauth2";
 import { PassportStrategy } from "../../interfaces/index";
 import { Strategy as GitHubStrategy } from "passport-github2";
-import { createUser, getConnection, getUserByUsername } from "../../controllers/databaseAccessLayer";
+import { createUser, verifyUser, getConnection, getUserByUsername } from "../../controllers/databaseAccessLayer";
 
 const githubStrategy: GitHubStrategy = new GitHubStrategy(
   {
@@ -31,6 +31,7 @@ const githubStrategy: GitHubStrategy = new GitHubStrategy(
           "", 
           connection
         );
+        await verifyUser(newUser.id, connection)
         return done(null, {...newUser, password:"placeholder", is_verified:true, is_admin:false});
       }
     } catch (error) {

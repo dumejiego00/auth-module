@@ -3,7 +3,7 @@ import { VerifyCallback } from "passport-oauth2";
 import { PassportStrategy } from "../../interfaces/index";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { getConnection } from "../../controllers/databaseAccessLayer";
-import { createUser, getUserByEmail } from "../../controllers/databaseAccessLayer";
+import { createUser, verifyUser, getUserByEmail } from "../../controllers/databaseAccessLayer";
 
 
 const googleStrategy: GoogleStrategy = new GoogleStrategy(
@@ -34,6 +34,7 @@ const googleStrategy: GoogleStrategy = new GoogleStrategy(
           "", 
           connection
         );
+        await verifyUser(newUser.id, connection)
         return done(null, {
           ...newUser,
           password: "placeholder",

@@ -1,5 +1,7 @@
 import passport from "passport";
 import { PassportStrategy } from "../interfaces";
+import dotenv from "dotenv"
+dotenv.config()
 
 export default class PassportConfig {
  

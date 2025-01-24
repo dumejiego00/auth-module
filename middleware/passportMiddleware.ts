@@ -5,6 +5,7 @@ import localStrategy from "./passportStrategies/localStrategy";
 import githubStrategy from "./passportStrategies/githubStrategy"
 import googleStragegy from "./passportStrategies/googleStrategy"
 
+
 const passportConfig = new PassportConfig([
   localStrategy,
   githubStrategy,
