@@ -1,10 +1,10 @@
 import express from "express";
-const router = express.Router();
 import {
   ensureAuthenticated,
-  forwardAuthenticated,
 } from "../middleware/checkAuth";
-import { userModel } from "../models/userModel";
+
+
+const router = express.Router();
 
 router.get("/", (req, res) => {
   res.send("welcome");

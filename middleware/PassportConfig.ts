@@ -1,5 +1,4 @@
 import passport from "passport";
-
 import { PassportStrategy } from "../interfaces";
 
 export default class PassportConfig {

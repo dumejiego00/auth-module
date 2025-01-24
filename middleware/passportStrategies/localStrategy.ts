@@ -1,11 +1,7 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import {
-  getUserByEmailIdAndPassword,
-} from "../../controllers/userController";
 import { PassportStrategy } from "../../interfaces/index";
 import bcrypt from 'bcrypt'
-
 import { getConnection, getUserByEmail, getUserById } from "../../databaseAccessLayer";
 
 declare global {

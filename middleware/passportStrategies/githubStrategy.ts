@@ -2,7 +2,7 @@ import { Strategy as GitHubStrategy } from "passport-github2";
 import { PassportStrategy } from "../../interfaces/index";
 import { Request } from "express";
 import { VerifyCallback } from "passport-oauth2";
-import { getUserById, createUser } from "../../databaseAccessLayer";
+import { createUser, getUserByUsername } from "../../databaseAccessLayer";
 import { getConnection } from "../../databaseAccessLayer";
 import dotenv from "dotenv";
 
@@ -22,10 +22,9 @@ const githubStrategy: GitHubStrategy = new GitHubStrategy(
     profile: any,
     done: VerifyCallback
   ) => {
-    console.log("profile", profile)
     try {
       const connection = await getConnection();
-      const user = await getUserById(Number(profile.id), connection); 
+      const user = await getUserByUsername(profile.username, connection); 
 
       if (user) {
         return done(null, user);

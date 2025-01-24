@@ -39,7 +39,7 @@ export async function getUserById(
   }
 }
 
-export async function getUserByUsername(username: string, connection: Connection): Promise<RowDataPacket | null> {
+export async function getUserByUsername(username: string, connection: Connection): Promise<User | null> {
   const sqlQuery = `
     SELECT id, email, username, is_verified, is_admin, created_at
     FROM users
@@ -47,7 +47,8 @@ export async function getUserByUsername(username: string, connection: Connection
   `;
   try {
     const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { username });
-    return results[0] || null;
+    const user = results[0] as User;
+    return user
   } catch (err) {
     console.error("Error fetching user by username:", err);
     return null;

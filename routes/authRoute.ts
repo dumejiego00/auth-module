@@ -1,16 +1,12 @@
 import express from "express";
 import passport from "passport";
 import { forwardAuthenticated } from "../middleware/checkAuth";
-import { ensureAuthenticated } from "../middleware/checkAuth";
 import passportGitHubStrategy from "../middleware/passportStrategies/githubStrategy";
 import { userModel } from "../models/userModel";
 import jwt from "jsonwebtoken";
-
 import { verifyUser, createUser, getConnection } from "../databaseAccessLayer";
-import { get } from "http";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import flash from "connect-flash"
 dotenv.config();
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -54,9 +50,7 @@ router.get(
 );
 
 router.get("/register", forwardAuthenticated, (req, res) => {
-  // Retrieve flash messages for errors or other types
-  const message = req.flash("error"); // Assuming "error" is the flash key used for errors
-
+  const message = req.flash("error"); 
   res.render("register", { message});
 });
 
@@ -118,7 +112,7 @@ router.post("/register", async (req, res) => {
 
 
 router.get("/register-success", (req, res) => {
-  const message = req.query.message || "Registration successful!";
+  const message = "Registration successful!";
   res.render("register-success", { message });
 });
 

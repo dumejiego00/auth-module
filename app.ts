@@ -5,17 +5,14 @@ import path from "path";
 import passportMiddleware from "./middleware/passportMiddleware";
 import flash from "connect-flash";
 
-const port = process.env.PORT || 8000; // Fixed typo: `process.env.port` -> `process.env.PORT`
+const port = process.env.PORT || 8000;
 
 const app = express();
 
-// Set view engine
 app.set("view engine", "ejs");
 
-// Static files
 app.use(express.static(path.join(__dirname, "public")));
 
-// Initialize session middleware
 app.use(
   session({
     secret: "secret",
@@ -23,26 +20,21 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, // Set `true` in production with HTTPS
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      secure: false, 
+      maxAge: 24 * 60 * 60 * 1000, 
     },
   })
 );
 
-// Initialize connect-flash
 app.use(flash());
 
-// Middleware for parsing request bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Set up EJS layouts
 app.use(expressLayouts);
 
-// Initialize passport middleware
 passportMiddleware(app);
 
-// Custom middleware for flash messages and logging
 app.use((req, res, next) => {
   console.log(`User details are:`, req.user);
 
