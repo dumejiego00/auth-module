@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { PassportStrategy } from "../../interfaces/index";
 import bcrypt from 'bcrypt'
-import { getConnection, getUserByEmail, getUserById } from "../../databaseAccessLayer";
+import { getConnection, getUserByEmail, getUserById } from "../../controllers/databaseAccessLayer";
 
 declare global {
   namespace Express {

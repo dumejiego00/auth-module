@@ -2,8 +2,8 @@ import { Strategy as GitHubStrategy } from "passport-github2";
 import { PassportStrategy } from "../../interfaces/index";
 import { Request } from "express";
 import { VerifyCallback } from "passport-oauth2";
-import { createUser, getUserByUsername } from "../../databaseAccessLayer";
-import { getConnection } from "../../databaseAccessLayer";
+import { createUser, getUserByUsername } from "../../controllers/databaseAccessLayer";
+import { getConnection } from "../../controllers/databaseAccessLayer";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -35,7 +35,7 @@ const githubStrategy: GitHubStrategy = new GitHubStrategy(
           "", 
           connection
         );
-        return done(null, {...newUser, password:"placeholder", is_verified:false, is_admin:false});
+        return done(null, {...newUser, password:"placeholder", is_verified:true, is_admin:false});
       }
     } catch (error) {
       console.error("GitHub Strategy Error:", error);

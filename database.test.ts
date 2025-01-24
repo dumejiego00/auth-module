@@ -1,5 +1,5 @@
-import { checkIfUsernameExist, checkIfEmailExist, createUser, getUserByEmail, getUserById, getUserByUsername, verifyUser } from './databaseAccessLayer';
-import { getTestConnection, closeTestConnection, resetTestDatabase } from './databaseTestConnection';
+import { checkIfUsernameExist, checkIfEmailExist, createUser, getUserByEmail, getUserById, getUserByUsername, verifyUser } from './controllers/databaseAccessLayer';
+import { getTestConnection, closeTestConnection, resetTestDatabase } from './controllers/databaseTestConnection';
 import { Connection, RowDataPacket } from 'mysql2/promise';
 
 describe('checkIfUsernameExist', () => {
@@ -269,6 +269,7 @@ describe('getUserByUsername', () => {
     const nonExistingUsername = 'nonexistinguser';
 
     const user = await getUserByUsername(nonExistingUsername, connection);
+    console.log("what was returned", user)
 
     expect(user).toBeNull();
   });

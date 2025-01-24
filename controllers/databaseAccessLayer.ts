@@ -1,4 +1,4 @@
-import database from "./databaseConnection";
+import database from './databaseConnection'
 import { RowDataPacket, ResultSetHeader, Connection } from "mysql2/promise";
 import bcrypt from 'bcrypt';
 import validator from 'validator';
@@ -47,8 +47,10 @@ export async function getUserByUsername(username: string, connection: Connection
   `;
   try {
     const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { username });
-    const user = results[0] as User;
-    return user
+    if (results.length === 0) {
+      return null; // Explicitly return null when no user is found
+    }
+    return results[0] as User;
   } catch (err) {
     console.error("Error fetching user by username:", err);
     return null;

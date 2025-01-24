@@ -4,7 +4,7 @@ import { forwardAuthenticated } from "../middleware/checkAuth";
 import passportGitHubStrategy from "../middleware/passportStrategies/githubStrategy";
 import { userModel } from "../models/userModel";
 import jwt from "jsonwebtoken";
-import { verifyUser, createUser, getConnection } from "../databaseAccessLayer";
+import { verifyUser, createUser, getConnection } from "../controllers/databaseAccessLayer";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
