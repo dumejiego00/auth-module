@@ -1,9 +1,12 @@
-import express from "express";
-import expressLayouts from "express-ejs-layouts";
-import session from "express-session";
 import path from "path";
-import passportMiddleware from "./middleware/passportMiddleware";
+import dotenv from "dotenv"
+import express from "express";
 import flash from "connect-flash";
+import session from "express-session";
+import expressLayouts from "express-ejs-layouts";
+import passportMiddleware from "./middleware/passportMiddleware";
+
+dotenv.config();
 
 const port = process.env.PORT || 8000;
 

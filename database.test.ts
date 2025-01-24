@@ -1,6 +1,6 @@
-import { checkIfUsernameExist, checkIfEmailExist, createUser, getUserByEmail, getUserById, getUserByUsername, verifyUser } from './controllers/databaseAccessLayer';
-import { getTestConnection, closeTestConnection, resetTestDatabase } from './controllers/databaseTestConnection';
 import { Connection, RowDataPacket } from 'mysql2/promise';
+import { getTestConnection, closeTestConnection, resetTestDatabase } from './controllers/databaseTestConnection';
+import { checkIfUsernameExist, checkIfEmailExist, createUser, getUserByEmail, getUserById, getUserByUsername, verifyUser } from './controllers/databaseAccessLayer';
 
 describe('checkIfUsernameExist', () => {
   let connection: Connection;

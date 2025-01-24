@@ -1,18 +1,14 @@
-import { Strategy as GitHubStrategy } from "passport-github2";
-import { PassportStrategy } from "../../interfaces/index";
 import { Request } from "express";
 import { VerifyCallback } from "passport-oauth2";
-import { createUser, getUserByUsername } from "../../controllers/databaseAccessLayer";
-import { getConnection } from "../../controllers/databaseAccessLayer";
-import dotenv from "dotenv";
-
-dotenv.config();
+import { PassportStrategy } from "../../interfaces/index";
+import { Strategy as GitHubStrategy } from "passport-github2";
+import { createUser, getConnection, getUserByUsername } from "../../controllers/databaseAccessLayer";
 
 const githubStrategy: GitHubStrategy = new GitHubStrategy(
   {
     clientID: process.env.GH_CLIENT_ID || "",
     clientSecret: process.env.GH_CLIENT_SECRET || "",
-    callbackURL: "http://localhost:8000/auth/github/callback",
+    callbackURL: process.env.CALLBACK_GITHUB_URL || "",
     passReqToCallback: true,
   },
   async (

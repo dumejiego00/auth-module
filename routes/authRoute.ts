@@ -1,12 +1,10 @@
 import express from "express";
-import passport from "passport";
-import { forwardAuthenticated } from "../middleware/checkAuth";
-import passportGitHubStrategy from "../middleware/passportStrategies/githubStrategy";
 import jwt from "jsonwebtoken";
-import { verifyUser, createUser, getConnection } from "../controllers/databaseAccessLayer";
+import passport from "passport";
 import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-dotenv.config();
+import { forwardAuthenticated } from "../middleware/checkAuth";
+import { verifyUser, createUser, getConnection } from "../controllers/databaseAccessLayer";
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -22,6 +20,32 @@ declare module "express-session" {
     messages: string[];
   }
 }
+
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// Google authentication callback route
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res) => {
+    const id = req.user!.id;
+
+    console.log(req.user)
+
+    if (req.user?.is_admin) {
+      res.render("adminDashboard", {
+        user: req.user,
+      });
+    } else {
+      res.render("dashboard", {
+        user: req.user,
+      });
+    }
+  }
+);
 
 router.get(
   "/github",

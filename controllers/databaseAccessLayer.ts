@@ -1,16 +1,8 @@
-import database from './databaseConnection'
-import { RowDataPacket, ResultSetHeader, Connection } from "mysql2/promise";
 import bcrypt from 'bcrypt';
 import validator from 'validator';
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  password: string;
-  is_verified: boolean;
-  is_admin:boolean;
-}
+import { User } from '../interfaces';
+import database from './databaseConnection'
+import { RowDataPacket, ResultSetHeader, Connection } from "mysql2/promise";
 
 export async function getConnection() {
   const connection = await database.getConnection();
@@ -41,7 +33,7 @@ export async function getUserById(
 
 export async function getUserByUsername(username: string, connection: Connection): Promise<User | null> {
   const sqlQuery = `
-    SELECT id, email, username, is_verified, is_admin, created_at
+    SELECT id, email, username, is_verified, is_admin
     FROM users
     WHERE username = :username;
   `;
@@ -62,7 +54,7 @@ export async function getUserByEmail(
   connection: Connection
 ): Promise<User | null> { 
   const sqlQuery = `
-    SELECT id, username, email, password, is_verified
+    SELECT id, username, email, password, is_verified, is_admin
     FROM users
     WHERE email = :email;
   `;

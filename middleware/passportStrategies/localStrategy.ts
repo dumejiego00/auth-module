@@ -1,22 +1,14 @@
+import bcrypt from 'bcrypt'
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { PassportStrategy } from "../../interfaces/index";
-import bcrypt from 'bcrypt'
+import { User as AppUser, PassportStrategy } from "../../interfaces/index";
 import { getConnection, getUserByEmail, getUserById } from "../../controllers/databaseAccessLayer";
 
 declare global {
   namespace Express {
-    interface User {
-      id: number;
-      username: string;
-      email: string;
-      password: string;
-      is_verified:boolean;
-      is_admin:boolean;
-    }
+    interface User extends AppUser {} 
   }
 }
-
 
 const localStrategy = new LocalStrategy(
   {
