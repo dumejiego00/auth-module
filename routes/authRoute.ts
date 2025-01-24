@@ -2,7 +2,6 @@ import express from "express";
 import passport from "passport";
 import { forwardAuthenticated } from "../middleware/checkAuth";
 import passportGitHubStrategy from "../middleware/passportStrategies/githubStrategy";
-import { userModel } from "../models/userModel";
 import jwt from "jsonwebtoken";
 import { verifyUser, createUser, getConnection } from "../controllers/databaseAccessLayer";
 import nodemailer from "nodemailer";
@@ -24,8 +23,6 @@ declare module "express-session" {
   }
 }
 
-passport.use(passportGitHubStrategy.strategy);
-
 router.get(
   "/github",
   passport.authenticate("github", { scope: ["user:email"] }),
@@ -37,7 +34,7 @@ router.get(
   passport.authenticate("github", { failureRedirect: "/login" }),
   (req, res) => {
     const id = req.user!.id;
-    if (userModel.isAdmin(id)) {
+    if (req.user?.is_admin) {
       res.render("adminDashboard", {
         user: req.user,
       });
