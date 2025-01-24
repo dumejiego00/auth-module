@@ -1,7 +1,4 @@
 import mysql, { Pool, PoolOptions } from "mysql2/promise";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const dbConfigLocal: PoolOptions = {
   host: process.env.DB_HOST as string,
