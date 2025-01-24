@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
  "scripts": {
-  "build": "tsc", 
+  "build": "tsc",
   "start": "node dist/app.js",
   "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' app.ts",
-  "test": "jest"
-  },
+  "vercel-build": "npm run build"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
