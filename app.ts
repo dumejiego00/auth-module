@@ -8,8 +8,6 @@ import passportMiddleware from "./middleware/passportMiddleware";
 
 dotenv.config();
 
-const port = process.env.PORT || 8000;
-
 const app = express();
 
 app.set("view engine", "ejs");
@@ -49,15 +47,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// Import routes
 import authRoute from "./routes/authRoute";
 import indexRoute from "./routes/indexRoute";
 
-// Use routes
 app.use("/", indexRoute);
 app.use("/auth", authRoute);
 
-// Start server
-app.listen(port, () => {
-  console.log(`🚀 Server has started on http://localhost:${port}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  const port = process.env.PORT || 8000;
+  app.listen(port, () => {
+    console.log(`🚀 Server has started on http://localhost:${port}`);
+  });
+}
+
+export default app; 
