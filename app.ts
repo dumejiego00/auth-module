@@ -14,6 +14,7 @@ app.set("view engine", "ejs");
 
 app.use(express.static(path.join(__dirname, "public")));
 
+// Consider adding key "store" to prevent leaking on production
 app.use(
   session({
     secret: "secret",
@@ -55,7 +56,7 @@ app.use("/auth", authRoute);
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
-  console.log(`🚀 Server has started on ${port}`);
+  console.log(`🚀 Server has started on http://localhost:${port}`);
 });
 
 

@@ -22,6 +22,4 @@ const dbConfigLocal: PoolOptions = {
 
 const database: Pool = mysql.createPool(isFreeDB ? dbConfigFreeDB : dbConfigLocal);
 
-console.log("isFreeDB",isFreeDB)
-
 export default database;
