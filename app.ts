@@ -53,11 +53,10 @@ import indexRoute from "./routes/indexRoute";
 app.use("/", indexRoute);
 app.use("/auth", authRoute);
 
-if (process.env.NODE_ENV !== "production") {
-  const port = process.env.PORT || 8000;
-  app.listen(port, () => {
-    console.log(`🚀 Server has started on http://localhost:${port}`);
-  });
-}
+const port = process.env.PORT || 8000;
+app.listen(port, () => {
+  console.log(`🚀 Server has started on ${port}`);
+});
+
 
 export default app; 
