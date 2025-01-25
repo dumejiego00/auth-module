@@ -9,12 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
-  },
-  "include": [
-    "app.ts",
-    "routes/**/*",
-    "middleware/**/*"
-  ],
-  "exclude": ["node_modules"]
+    "skipLibCheck": true,
+    "types":["node"]
+  }
 }
