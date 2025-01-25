@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "build": "tsc --listFiles",
+    "build": "tsc",
     "start": "node dist/app.js"
   },
   "keywords": [],
@@ -30,8 +30,7 @@
     "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "validator": "^13.12.0",
-    "typescript": "^5.7.3"
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
