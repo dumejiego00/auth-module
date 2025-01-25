@@ -1,8 +1,8 @@
 {
-  "name": "passportdemo",
+  "name": "auth_module",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
  "scripts": {
   "build": "tsc && echo 'Build Complete!'",
   "start": "node dist/app.js",
