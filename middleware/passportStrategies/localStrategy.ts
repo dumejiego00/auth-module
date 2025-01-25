@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import bcrypt from "bcrypt";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { User as AppUser, PassportStrategy } from "../../interfaces/index";
@@ -16,8 +16,10 @@ const localStrategy = new LocalStrategy(
     passwordField: "password", 
   },
   async (email, password, done) => {
+    let connection;
     try {
-      const connection = await getConnection();
+      connection = await getConnection();
+
       const user = await getUserByEmail(email, connection);
 
       if (!user) {
@@ -36,6 +38,10 @@ const localStrategy = new LocalStrategy(
       return done(null, user);
     } catch (error: any) {
       return done(error, false, { message: error.message });
+    } finally {
+      if (connection) {
+        connection.release();
+      }
     }
   }
 );
@@ -51,17 +57,23 @@ passport.deserializeUser(async function (
   id: number,
   done: (err: any, user?: Express.User | false | null) => void
 ) {
+  let connection;
   try {
-    const connection = await getConnection();
+    connection = await getConnection();
+
     const user = await getUserById(Number(id), connection);
 
     if (user) {
       done(null, user);
     } else {
-      done({ message: "User not found" }, null); 
+      done({ message: "User not found" }, null);
     }
   } catch (error) {
-    done({ message: "Error fetching user", error }, null); 
+    done({ message: "Error fetching user", error }, null);
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 });
 
