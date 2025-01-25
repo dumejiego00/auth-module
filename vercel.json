@@ -3,22 +3,18 @@
     "builds": [
       {
         "src": "app.ts",
-        "use": "@vercel/node"
+        "use": "@vercel/node",
+        "config": {
+          "maxLambdaSize": "50mb"
+        }
       }
     ],
-    "build": {
-      "env": {
-        "NODE_ENV": "production"
-      },
-      "commands": {
-        "build": "npm run build:tsc"
-      }
-    },
     "routes": [
       {
         "src": "/(.*)",
         "dest": "/dist/$1"
       }
-    ]
+    ],
+    "buildCommand": "npm run build:tsc"
   }
   
