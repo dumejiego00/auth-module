@@ -100,6 +100,10 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
-  "include": ["app.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "app.ts", // Include the main file
+    "routes/**/*", // Include other files like routes
+    "middleware/**/*" // Include any middleware
+  ],
+  "exclude": ["node_modules"] 
 }
