@@ -3,7 +3,7 @@
     "target": "ES6",
     "module": "CommonJS",
     "resolveJsonModule": true,
-    "outDir": "/dist",
+    "outDir": "./dist",
     "noEmitOnError": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
