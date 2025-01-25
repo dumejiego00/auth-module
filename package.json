@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
- "scripts": {
-  "build": "tsc && echo 'Build Complete!'",
-  "start": "node dist/app.js",
-  "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' app.ts",
-  "vercel-build": "npm run build"
-},
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node app.ts",
+    "start": "ts-node app.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
