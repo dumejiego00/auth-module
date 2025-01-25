@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npm install && tsc",
     "start": "node dist/app.js",
-    "test": "jest"
+    "test": "jest",
+    "dev": "ts-node app.ts"
   },
   "keywords": [],
   "author": "",

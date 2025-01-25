@@ -40,7 +40,7 @@ export async function getUserByUsername(username: string, connection: Connection
   try {
     const [results] = await connection.query<RowDataPacket[]>(sqlQuery, { username });
     if (results.length === 0) {
-      return null; // Explicitly return null when no user is found
+      return null; 
     }
     return results[0] as User;
   } catch (err) {

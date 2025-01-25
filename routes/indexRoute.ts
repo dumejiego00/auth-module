@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
 
 router.get("/dashboard", ensureAuthenticated, (req, res) => {
   const id = req.user!.id;
-  if (req.user?.is_verified) {
+  if (req.user?.is_admin) {
     res.render("adminDashboard", {
       user: req.user,
     });
