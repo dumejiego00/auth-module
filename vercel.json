@@ -11,6 +11,7 @@
         "src": "/(.*)",
         "dest": "/dist/$1"
       }
-    ]
+    ],
+    "buildCommand":"npm run build"
   }
   
