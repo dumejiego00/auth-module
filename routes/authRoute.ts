@@ -30,10 +30,6 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
-    const id = req.user!.id;
-
-    console.log(req.user)
-
     if (req.user?.is_admin) {
       res.render("adminDashboard", {
         user: req.user,
@@ -56,7 +52,6 @@ router.get(
   "/github/callback",
   passport.authenticate("github", { failureRedirect: "/login" }),
   (req, res) => {
-    const id = req.user!.id;
     if (req.user?.is_admin) {
       res.render("adminDashboard", {
         user: req.user,
@@ -70,13 +65,14 @@ router.get(
 );
 
 router.get("/register", forwardAuthenticated, (req, res) => {
-  const message = req.flash("error"); 
-  res.render("register", { message});
+  const message = req.flash("error");
+  res.render("register", { message });
 });
 
 router.post("/register", async (req, res) => {
-  const connection = await getConnection();
+  let connection;
   try {
+    connection = await getConnection();
     const { username, email, password } = req.body;
 
     const newUser = await createUser(username, email, password, connection);
@@ -103,9 +99,7 @@ router.post("/register", async (req, res) => {
 
     try {
       await transporter.sendMail(mailOptions);
-      console.log("Verification email sent successfully");
     } catch (error) {
-      console.error("Failed to send verification email:", error);
       req.flash(
         "error",
         "Registration successful, but we couldn't send the verification email. Please try again."
@@ -120,16 +114,17 @@ router.post("/register", async (req, res) => {
     res.redirect("/auth/register-success");
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error("Registration error:", error.message);
       req.flash("error", error.message);
     } else {
-      console.error("Unexpected error:", error);
       req.flash("error", "An unexpected error occurred. Please try again.");
     }
     res.redirect("/auth/register");
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 });
-
 
 router.get("/register-success", (req, res) => {
   const message = "Registration successful!";
@@ -141,14 +136,13 @@ router.get("/verify-email", async (req, res) => {
 
   const JWT_SECRET = process.env.JWT_SECRET;
   if (!JWT_SECRET) {
-    console.error("JWT_SECRET is not defined");
     req.flash("error", "Server configuration error. Please try again later.");
     return res.redirect("/auth/register");
   }
 
-  const connection = await getConnection();
-
+  let connection;
   try {
+    connection = await getConnection();
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
 
     await verifyUser(decoded.userId, connection);
@@ -156,21 +150,22 @@ router.get("/verify-email", async (req, res) => {
     req.flash("success", "Email verified successfully! You can now log in.");
     res.redirect("/auth/login");
   } catch (error) {
-    console.error("Email verification error:", error);
     req.flash(
       "error",
       "Invalid or expired token. Please contact support or try registering again with a different username/email."
     );
     res.redirect("/auth/register");
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 });
 
-
 router.get("/login", forwardAuthenticated, (req, res) => {
-  const message = req.flash("error"); 
+  const message = req.flash("error");
   res.render("login", { message });
 });
-
 
 router.post(
   "/login",
