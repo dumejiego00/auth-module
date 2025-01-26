@@ -7,19 +7,19 @@ This project provides a modular authentication system, supporting multiple authe
 - **Email + Password**
 - **GitHub Login**
 - **Google Login**
-![Description of image](images/image_1.png)
+![login](images/image_1.png)
 
 
 Additionally, the system includes:
 - Admin and Non-Admin user roles with separate dashboards
-![Description of image](images/image_3.png)
-![Description of image](images/image_4.png)
-![Description of image](images/image_5.png)
+![dashboard](images/image_3.png)
+![admin dashboard](images/image_4.png)
+![admin panel](images/image_5.png)
 
 
 
 - Email verification for email + password logins
-![Description of image](images/image_2.png)
+![register](images/image_2.png)
 
 - Database functions with Jest test cases for unit testing
 
